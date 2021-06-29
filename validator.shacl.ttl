@@ -1,0 +1,117 @@
+PREFIX dcat: <http://www.w3.org/ns/dcat#>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX geo: <http://www.opengis.net/ont/geosparql#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX req: <https://data.surroundaustralia.com/def/olapapi/requirement/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX sh: <http://www.w3.org/ns/shacl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+#
+#   RDFS
+#
+req:rdfs
+	a sh:NodeShape ;
+	sh:targetClass dcat:Dataset ;
+    sh:message "For each RDFS `Container` instance, predicates indicating parts of it, such as RDFS' `member` _MUST NOT_ be present."@en ;
+    sh:predicate [
+        sh:path rdfs:member ;
+        sh:maxCount 0 ;
+    ]
+.
+
+#
+#   RDF
+#
+req:rdf
+	a sh:NodeShape ;
+	sh:targetClass dcat:Dataset ;
+    sh:message "For each RDF `Bag`, `Alt` or `Seq` instance, predicates indicating parts of it, such as RDFS' `member` _MUST NOT_ be present."@en ;
+    sh:predicate [
+        sh:path rdfs:member ;
+        sh:maxCount 0 ;
+    ]
+.
+
+#
+#   DCAT
+#
+req:dcat
+	a sh:NodeShape ;
+	sh:targetClass dcat:Catalog ;
+    sh:message "For each DCAT `Catalog` instance, predicates indicating parts (members) of it _MUST NOT_ be present. These include `dcterms:hasPart` and any subproperties of it, in particular those listed in DCAT: `dcat:catalog`, `dcat:dataset` & `dcat:service`."@en ;
+    sh:and(
+        [
+            sh:path dcterms:hasPart ;
+            sh:maxCount 0 ;
+        ]
+        [
+            sh:path dcat:catalog ;
+            sh:maxCount 0 ;
+        ]
+        [
+            sh:path dcat:dataset ;
+            sh:maxCount 0 ;
+        ]
+        [
+            sh:path dcat:service ;
+            sh:maxCount 0 ;
+        ]
+    )
+.
+
+#
+#   DCTERMS
+#
+req:dcterms
+	a sh:NodeShape ;
+	sh:targetClass dcterms:Collection ;
+    sh:message "For each Dublin Core Terms `Collection` instance, predicates indicating parts of it, such as Dublin Core Terms `hasPart` or RDFS' `member` _MUST NOT_ be present."@en ;
+    sh:and(
+        [
+            sh:path dcterms:hasPart ;
+            sh:maxCount 0 ;
+        ]
+        [
+            sh:path rdfs:member ;
+            sh:maxCount 0 ;
+        ]
+    )
+.
+
+#
+#   GeoSPARQL
+#
+req:geosparql
+	a sh:NodeShape ;
+	sh:targetClass geo:SpatialObjectCollection , geo:FeatureCollection , geo:GeometryCollection ;
+    sh:message "For each GeoPSARQL `SpatialObjectCollection`, `FeatureCollection` or `GeometryCollection` instance, predicates indicating parts of it, such as RDFS' `member` or ublin Core Terms `hasPart` _MUST NOT_ be present."@en ;
+    sh:predicate [
+        sh:path rdfs:member ;
+        sh:maxCount 0 ;
+    ]
+.
+
+#
+#   SKOS
+#
+req:skos
+	a sh:NodeShape ;
+	sh:targetClass skos:ConceptScheme , skos:Collection , skos:OrderedCollection ;
+    sh:message "For each SKOS `ConceptScheme`, `Collection` or `OrderedCollection` instance, predicates indicating parts of it, such as SKOS' `hasTopConcept`, `member` or `memberList` _MUST NOT_ be present."@en ;
+    sh:and(
+        [
+            sh:path skos:hasTopConcept ;
+            sh:maxCount 0 ;
+        ]
+        [
+            sh:path skos:member ;
+            sh:maxCount 0 ;
+        ]
+        [
+            sh:path skos:memberList ;
+            sh:maxCount 0 ;
+        ]        
+    )
+.
